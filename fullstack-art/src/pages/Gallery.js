@@ -1,6 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Gallery.css";
-import { CartContext } from "../context/CartContext"; // ✅ Added
+import { CartContext } from "../context/CartContext";
+import { RoleContext } from "../context/RoleContext";
+import { ArtContext } from "../context/ArtContext";
 
 const artworks = [
   {
@@ -122,16 +125,79 @@ const artworks = [
     price: "$700,000",
     image: "https://smarthistory.org/wp-content/uploads/2024/02/top.jpg",
   },
+  {
+    id: 18,
+    title: "The Great Wave off Kanagawa",
+    artist: "Hokusai",
+    price: "$2,500,000",
+    image: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Great_Wave_off_Kanagawa2.jpg",
+  },
+  {
+    id: 19,
+    title: "Cafe Terrace at Night",
+    artist: "Vincent van Gogh",
+    price: "$1,850,000",
+    image: "https://upload.wikimedia.org/wikipedia/commons/2/21/Vincent_Willem_van_Gogh_015.jpg",
+  },
+  {
+    id: 20,
+    title: "Wanderer above the Sea of Fog",
+    artist: "Caspar David Friedrich",
+    price: "$980,000",
+    image: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg",
+  },
+  {
+    id: 21,
+    title: "Hamsa Damayanti",
+    artist: "Raja Ravi Varma",
+    price: "$1,200,000",
+    image: "https://upload.wikimedia.org/wikipedia/commons/1/1d/Raja_Ravi_Varma%2C_Hamsa_Damayanthi.jpg",
+  },
+  {
+    id: 22,
+    title: "The Last Supper",
+    artist: "Leonardo da Vinci",
+    price: "$8,000,000",
+    image: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Última_Cena_-_Da_Vinci_5.jpg",
+  },
+  {
+    id: 23,
+    title: "American Gothic",
+    artist: "Grant Wood",
+    price: "$1,300,000",
+    image: "https://upload.wikimedia.org/wikipedia/commons/c/cc/Grant_Wood_-_American_Gothic_-_Google_Art_Project.jpg",
+  },
+  {
+    id: 24,
+    title: "Nighthawks",
+    artist: "Edward Hopper",
+    price: "$2,100,000",
+    image: "https://upload.wikimedia.org/wikipedia/commons/a/a8/Nighthawks_by_Edward_Hopper_1942.jpg",
+  }
 ];
 
 function Gallery() {
   const { addToCart } = useContext(CartContext); // ✅ Using global cart
+  const { isLoggedIn } = useContext(RoleContext);
+  const { artworks: contextArtworks } = useContext(ArtContext);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const navigate = useNavigate();
+
+  // Combine classic artworks with explicitly approved ones from Curator
+  const displayArtworks = [
+    ...artworks,
+    ...(contextArtworks ? contextArtworks.filter(a => a.approved) : [])
+  ];
 
   const handleBuy = (title) => {
     alert(`You purchased "${title}"`);
   };
 
   const handleAddToCart = (art) => {
+    if (!isLoggedIn && localStorage.getItem("isLoggedIn") !== "true") {
+      setShowAuthModal(true);
+      return;
+    }
     addToCart(art); // ✅ Changed here
     alert(`${art.title} added to cart`);
   };
@@ -141,24 +207,53 @@ function Gallery() {
       <h1 className="gallery-title">Premium Art Collection</h1>
 
       <div className="gallery-grid">
-        {artworks.map((art) => (
-          <div key={art.id} className="art-card">
+        {displayArtworks.map((art, index) => (
+          <div key={art.id || `ctx-${index}`} className="art-card">
             <img src={art.image} alt={art.title} />
             <h3>{art.title}</h3>
-            <p>{art.artist}</p>
-            <h4 className="price">{art.price}</h4>
+            <p>{art.artist || "Independent Artist"}</p>
+            <h4 className="price">{art.price.toString().startsWith('$') ? art.price : `$${Number(art.price).toLocaleString()}`}</h4>
 
-            <button onClick={() => handleBuy(art.title)}>
-              Buy Now
-            </button>
-
-            <button onClick={() => handleAddToCart(art)}>
-              Add to Cart
-            </button>
+            <div className="button-group">
+              <button onClick={() => handleBuy(art.title)}>
+                Buy Now
+              </button>
+              <button onClick={() => handleAddToCart(art)}>
+                Add to Cart
+              </button>
+            </div>
 
           </div>
         ))}
       </div>
+
+      {showAuthModal && (
+        <div className="modal-overlay" onClick={() => setShowAuthModal(false)}>
+          <div className="modal-content glass" onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ marginBottom: '1rem', fontSize: '1.8rem', color: '#fff' }}>Join ArtGallery</h2>
+            <p style={{ marginBottom: '2.5rem', opacity: 0.8, color: '#e2e8f0' }}>
+              Please login or create an account to start collecting limited edition masterpieces and completing your gallery.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
+              <button onClick={() => navigate('/login')} style={{ width: '100%', padding: '1rem' }}>
+                Login
+              </button>
+              <button
+                onClick={() => navigate('/signup')}
+                style={{ width: '100%', padding: '1rem', background: 'transparent', border: '1px solid #3b82f6', color: '#3b82f6' }}
+              >
+                Sign Up
+              </button>
+              <button
+                onClick={() => setShowAuthModal(false)}
+                style={{ width: '100%', padding: '1rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.4)', color: 'white', marginTop: '0.5rem' }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

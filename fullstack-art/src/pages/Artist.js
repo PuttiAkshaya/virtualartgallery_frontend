@@ -8,6 +8,17 @@ function Artist() {
   const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleUpload = () => {
     if (!title || !price || !image) {
       alert("Please fill all fields");
@@ -41,12 +52,25 @@ function Artist() {
           onChange={(e) => setPrice(e.target.value)}
         />
 
-        <input
-          type="text"
-          placeholder="Image URL"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-        />
+        <div style={{ textAlign: "left", marginBottom: "20px" }}>
+          <label style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.9rem", marginLeft: "5px" }}>Upload Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{ marginTop: "8px", padding: "12px", background: "rgba(0,0,0,0.5)", border: "1px dashed rgba(255,255,255,0.3)" }}
+          />
+        </div>
+
+        {image && (
+          <div style={{ marginBottom: "20px", borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <img
+              src={image}
+              alt="Preview"
+              style={{ width: "100%", height: "200px", objectFit: "cover" }}
+            />
+          </div>
+        )}
 
         <button onClick={handleUpload}>Upload</button>
       </div>

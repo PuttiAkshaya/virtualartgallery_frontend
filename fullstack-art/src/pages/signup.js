@@ -16,14 +16,9 @@ function Signup() {
       return;
     }
 
-    // Save role and login
-    login(role);
-
-    // Redirect based on role
-    if (role === "admin") navigate("/admin");
-    else if (role === "artist") navigate("/artist");
-    else if (role === "curator") navigate("/curator");
-    else navigate("/gallery");
+    // Show success message and redirect to login page
+    alert("Account created successfully! Please log in.");
+    navigate("/login");
   };
 
   return (
