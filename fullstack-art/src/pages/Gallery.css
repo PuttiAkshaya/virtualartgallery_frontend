@@ -28,7 +28,8 @@
 /* Smaller Image */
 .art-card img {
   width: 100%;
-  height: 200px;   /* reduced size */
+  height: 200px;
+  /* reduced size */
   object-fit: contain;
   background: white;
   border-radius: 8px;

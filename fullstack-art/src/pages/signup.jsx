@@ -16,6 +16,27 @@ function Signup() {
       return;
     }
 
+    let existingUsers = JSON.parse(localStorage.getItem("registeredUsers"));
+    if (!existingUsers) {
+      existingUsers = [
+        { username: "admin", password: "123", role: "admin" },
+        { username: "artist", password: "123", role: "artist" },
+        { username: "curator", password: "123", role: "curator" },
+        { username: "test", password: "123", role: "visitor" }
+      ];
+    }
+
+    const userExists = existingUsers.find(u => u.username === username);
+
+    if (userExists) {
+      alert("Username already exists! Please choose another or log in.");
+      return;
+    }
+
+    existingUsers.push({ username, password, role });
+    localStorage.setItem("registeredUsers", JSON.stringify(existingUsers));
+    localStorage.setItem("username", username);
+
     // Show success message and redirect to login page
     alert("Account created successfully! Please log in.");
     navigate("/login");

@@ -16,7 +16,36 @@ function Login() {
       return;
     }
 
+    let existingUsers = JSON.parse(localStorage.getItem("registeredUsers"));
+    if (!existingUsers) {
+      existingUsers = [
+        { username: "admin", password: "123", role: "admin" },
+        { username: "artist", password: "123", role: "artist" },
+        { username: "curator", password: "123", role: "curator" },
+        { username: "test", password: "123", role: "visitor" }
+      ];
+      localStorage.setItem("registeredUsers", JSON.stringify(existingUsers));
+    }
+
+    const foundUser = existingUsers.find(u => u.username === username);
+
+    if (!foundUser) {
+      alert("Account does not exist. Please sign up.");
+      return;
+    }
+
+    if (foundUser.password !== password) {
+      alert("Incorrect password. Please try again.");
+      return;
+    }
+
+    if (foundUser.role !== role) {
+      alert(`Invalid role selection! You are registered as ${foundUser.role}. Please select that role.`);
+      return;
+    }
+
     login(role);
+    localStorage.setItem("username", username);
 
     if (role === "admin") navigate("/admin");
     else if (role === "artist") navigate("/artist");
@@ -54,6 +83,16 @@ function Login() {
         </select>
 
         <button onClick={handleLogin}>Login</button>
+
+        <p style={{ textAlign: "center", marginTop: "1rem", color: "#e4e4e7" }}>
+          Don't have an account?{" "}
+          <span
+            onClick={() => navigate("/signup")}
+            style={{ color: "#3b82f6", cursor: "pointer", textDecoration: "underline" }}
+          >
+            Sign up
+          </span>
+        </p>
       </div>
     </div>
   );

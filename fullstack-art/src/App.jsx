@@ -13,6 +13,7 @@ import Artist from "./pages/Artist";
 import Curator from "./pages/Curator";
 import Signup from "./pages/signup";
 import Cart from "./pages/Cart";   // ✅ Added
+import MyOrders from "./pages/MyOrders";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/cart" element={<Cart />} /> {/* ✅ Added */}
+          <Route path="/orders" element={<MyOrders />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/artist" element={<Artist />} />
